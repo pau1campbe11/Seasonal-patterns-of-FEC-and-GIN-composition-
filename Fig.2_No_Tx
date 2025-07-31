@@ -1,1 +1,443 @@
+################################################
+# GGPLOT2 R SCRIPT FOR FIG.2 NO TREATMENT / SEASONAL PATTERNS OF FAECAL EGG COUNTS AND GASTROINTESTINAL NEMATODE SPECIES COMPOSITION IN SCOTTISH DAIRY CALVES 
+################################################
 
+library(ggplot2); packageVersion("ggplot2")
+library(reshape2); packageVersion("reshape2")
+library(patchwork); packageVersion("patchwork")
+library(gridExtra); packageVersion("gridExtra")
+library(ggpubr); packageVersion("ggpubr")
+
+################################################
+# FORMAT SPECIES DATA 
+
+# FARMS 09, 11, 18, 23, 26, 
+
+melt_data_09 <-melt(farm_09_spp, id = "day_date")
+melt_data_11 <-melt(farm_11_spp, id = "day_date")
+melt_data_18 <-melt(farm_18_spp, id = "day_date")
+melt_data_26 <-melt(farm_26_spp, id = "day_date")
+
+write.csv(melt_data_09, "melt_data_09.csv")
+write.csv(melt_data_11, "melt_data_11.csv")
+write.csv(melt_data_18, "melt_data_18.csv")
+write.csv(melt_data_26, "melt_data_26.csv")
+
+melt_data_26$variable <- factor(melt_data_26$variable, levels = c(
+  "Os.ostertagi",
+  "C.oncophora",
+  "Tr.axei",
+  "Tr.colubriformis",
+  "Oe.radiatum",
+  "Oe.venulosum",
+  "H.contortus",
+  "Te.circumcincta",
+  "Os.leptospicularis",
+  "N.helvetianus"
+))
+####################
+# NEMATODIRUS FEC
+####################
+
+# FARM 9 
+########
+
+farm_09_nem_fec_boxplot <- ggplot(farm_09_nem_fec, 
+                                  aes(x = day, 
+                                      y = epg, 
+                                      group = day))+
+  xlab("") +
+  ylab("Nematodirus\nspp. EPG") +
+  ggtitle("Farm 9") +
+  theme(plot.title = element_text(hjust = 0.5, size = 12, face = "bold")) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank()) + 
+  scale_y_continuous(limits = c(0, 25), n.breaks=3) +
+  geom_boxplot(outlier.colour = "red", outlier.fill = "red", outlier.size = 0.8)+
+  theme(axis.text.y = element_text(size = 8)) +
+  theme(axis.title.y = element_text(size = 10, face = "bold")) +
+  theme(panel.grid.minor = element_blank())
+
+farm_09_nem_fec_boxplot
+
+
+
+# FARM 11
+########
+
+farm_11_nem_fec_boxplot <- ggplot(farm_11_nem_fec, 
+                                  aes(x = day, 
+                                      y = epg, 
+                                      group = day))+
+  xlab("") +
+  ylab("") +
+  ggtitle("Farm 11") +
+  theme(plot.title = element_text(hjust = 0.5, size = 12, face = "bold")) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank()) + 
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),) +
+  scale_y_continuous(limits = c(0, 25), n.breaks=3) +
+  geom_boxplot(outlier.colour = "red", outlier.fill = "red", outlier.size = 0.8)+
+  theme(panel.grid.minor = element_blank())
+
+farm_11_nem_fec_boxplot
+
+# FARM 18
+########
+
+farm_18_nem_fec_boxplot <- ggplot(farm_18_nem_fec, 
+                                  aes(x = day, 
+                                      y = epg, 
+                                      group = day))+
+  xlab("") +
+  ylab("") +
+  ggtitle("Farm 18") +
+  theme(plot.title = element_text(hjust = 0.5, size = 12, face = "bold")) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank()) + 
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),) +
+  scale_y_continuous(limits = c(0, 25), n.breaks=3) +
+  geom_boxplot(outlier.colour = "red", outlier.fill = "red", outlier.size = 0.8)+
+  theme(panel.grid.minor = element_blank())
+
+farm_18_nem_fec_boxplot
+
+
+# FARM 26
+########
+
+farm_26_nem_fec_boxplot <- ggplot(farm_26_nem_fec, 
+                                  aes(x = day, 
+                                      y = epg, 
+                                      group = day_date))+
+  xlab("") +
+  ylab("") +
+  ggtitle("Farm 26") +
+  theme(plot.title = element_text(hjust = 0.5, size = 12, face = "bold")) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank()) + 
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),) +
+  scale_y_continuous(limits = c(0, 25), n.breaks=3) +
+  geom_boxplot(outlier.colour = "red", outlier.fill = "red", outlier.size = 0.8)+
+  theme(panel.grid.minor = element_blank())
+
+
+farm_26_nem_fec_boxplot
+
+#NEMATODIRUS TOGETHER 
+#####################
+
+farm_09_nem_fec_boxplot + farm_11_nem_fec_boxplot + farm_18_nem_fec_boxplot + farm_26_nem_fec_boxplot +
+  plot_layout(widths = c(1, 1, 1, 1, 1), )
+
+
+####################
+#STRONGYLE FEC 
+####################
+
+# FARM 9 STRONGYLE FEC
+
+farm_09_fec_boxplot <- ggplot(farm_09_fec, aes(x = day, y = epg, group = day_date)) +
+  xlab("") +
+  ylab("Strongyle-type \nEPG") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  scale_y_continuous(limits = c(0, 320))+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank()) + 
+  geom_boxplot(outlier.colour = "red", outlier.fill = "red", outlier.size = 0.8) +
+  theme(axis.text.y = element_text(size = 8)) +
+  theme(axis.title.y = element_text(size = 10, face = "bold"))
+
+farm_09_fec_boxplot
+
+# FARM 11 STRONGYLE FEC
+
+farm_11_fec_boxplot <- ggplot(farm_11_fec, aes(x = day_date, y = epg, group = day_date)) +
+  xlab("") +
+  ylab("") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  scale_y_continuous(limits = c(0, 320)) +
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),) +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank()) + 
+  geom_boxplot(outlier.colour = "red", outlier.fill = "red", outlier.size = 0.8)
+  
+farm_11_fec_boxplot
+              
+# FARM 18 STRONGYLE FEC              
+
+farm_18_fec_boxplot <- ggplot(farm_18_fec, aes(x = day, y = epg, group = day_date)) +
+  xlab("") +
+  ylab("") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  scale_y_continuous(limits = c(0, 320)) +
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),) +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank()) + 
+  geom_boxplot(outlier.colour = "red", outlier.fill = "red", outlier.size = 0.8)
+
+farm_18_fec_boxplot
+
+# FARM 26 STRONGYLE FEC    
+
+farm_26_fec_boxplot <- ggplot(farm_26_fec, aes(x = day, y = epg, group = day_date)) +
+  xlab("") +
+  ylab("") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  scale_y_continuous(limits = c(0, 320)) +
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),) +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank()) + 
+  geom_boxplot(outlier.colour = "red", outlier.fill = "red", outlier.size = 0.8)
+
+farm_26_fec_boxplot
+
+    
+            
+# FARM_09 SPECIES PLOT 
+
+farm_09_spp_plot <- ggplot(melt_data_09, aes(x = day_date, y = value, fill = variable)) +
+  geom_col(position = "fill") +
+  theme_classic()+
+  scale_x_discrete(labels=c("18/06",
+                            "16/07",
+                            "15/08",
+                            "14/09",
+                            "04/10")) +
+  labs(fill="") +
+  ylab("Species composition") +
+  xlab("") +
+  theme(legend.position="none")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.5, size = 8)) +
+  theme(axis.text.y = element_text(size = 8)) +
+  theme(axis.title.y = element_text(size = 10, face = "bold"))+
+  scale_fill_manual(values = c( "O.ostertagi" = "#246377",
+                                "C.oncophora" = "#cc9900",
+                                "T.axei" = "#bdd373",
+                                "T.colubriformis" = "#98c127", 
+                                "O.radiatum" = "#7e4794",
+                                "O.venulosum" = "#c701ff", 
+                                "H.contortus" = "#d83034",
+                                "Te.circumcincta" = "#ff8cab", 
+                                "O.leptospicularis" = "#8fd7d7", 
+                                "N.helvetianus" = "#0b3a7d")) + 
+  scale_y_continuous(labels = scales::percent_format(scale = 100),
+                     expand = c(0, 0) ) 
+
+
+
+  
+
+farm_09_spp_plot
+
+
+# FARM_11 SPECIES PLOT 
+
+  farm_11_spp_plot <- ggplot(melt_data_11, aes(x=day_date, y = value, fill = variable)) +
+    geom_col(position = "fill") +
+    theme_classic()+
+    scale_x_discrete(labels=c("18/06",
+                              "16/07",
+                              "15/08",
+                              "14/09"))+
+    ylab("") +
+    xlab("") +
+    theme(axis.title.y=element_blank(),
+          axis.text.y=element_blank(),) +
+    theme(legend.position="none") +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.5, size = 8)) +
+    scale_fill_manual(values = c( "O.ostertagi" = "#246377",
+                                  "C.oncophora" = "#cc9900",
+                                  "T.axei" = "#bdd373",
+                                  "T.colubriformis" = "#98c127", 
+                                  "O.radiatum" = "#7e4794",
+                                  "O.venulosum" = "#c701ff", 
+                                  "H.contortus" = "#d83034",
+                                  "T.circumcincta" = "#ff8cab", 
+                                  "O.leptospicularis" = "#8fd7d7", 
+                                  "N.helvetianus" = "#0b3a7d")) + 
+    scale_y_continuous(labels = scales::percent_format(scale = 100),
+                       expand = c(0, 0) ) 
+  
+  
+  
+  
+  
+  farm_11_spp_plot 
+
+
+# FARM_18 SPECIES PLOT
+
+ farm_18_spp_plot <- ggplot(melt_data_18, aes(x=day_date, y = value, fill = variable)) +
+    geom_col(position = "fill") +
+    theme_classic()+
+    scale_x_discrete(labels=c("26/06",
+                              "24/07",
+                              "21/08",
+                              "19/09",
+                              "16/10"))+
+    ylab("") +
+    xlab("Sampling date (day/month)") +
+    theme(axis.title.y=element_blank(),
+          axis.text.y=element_blank(),) +
+    theme(legend.position="none") +
+    theme(legend.key.height= unit(0.2, 'cm'),
+          legend.key.width= unit(0.2, 'cm'),
+          legend.title = element_text(size=5, face = "bold"))+
+    theme(legend.text = element_text(size = 6))+
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.5, size = 8)) +
+   scale_fill_manual(values = c( "O.ostertagi" = "#246377",
+                                 "C.oncophora" = "#cc9900",
+                                 "T.axei" = "#bdd373",
+                                 "T.colubriformis" = "#98c127", 
+                                 "O.radiatum" = "#7e4794",
+                                 "O.venulosum" = "#c701ff", 
+                                 "H.contortus" = "#d83034",
+                                 "T.circumcincta" = "#ff8cab", 
+                                 "O.leptospicularis" = "#8fd7d7", 
+                                 "N.helvetianus" = "#0b3a7d")) + 
+    theme(
+      axis.title.x = element_text(margin = margin(t = 15), face = "bold")) +
+    theme(
+      axis.title.x = element_text(hjust = 4)) + 
+   scale_y_continuous(labels = scales::percent_format(scale = 100),
+                      expand = c(0, 0) ) 
+ 
+  
+      
+  
+  
+    
+  
+  
+  
+  farm_18_spp_plot
+
+# FARM_26 SPECIES PLOT
+
+  farm_26_spp_plot <- ggplot(melt_data_26, aes(x=day_date, y = value, fill = variable)) +
+    geom_col(position = "fill") +
+    theme_classic()+
+    scale_x_discrete(labels=c("20/06",
+                              "17/07",
+                              "14/08",
+                              "09/09",
+                              "10/10",
+                              "05/11"))+
+  
+  ylab("") +
+    xlab("") +
+    theme(axis.title.y=element_blank(),
+          axis.text.y=element_blank(),) +
+    theme(legend.text = element_text(face = "italic", size = 6)) +
+    labs(fill='Species')+
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.5, size = 8)) +
+    theme(legend.key.height= unit(0.2, 'cm'),
+          legend.key.width= unit(0.2, 'cm'),
+          legend.title = element_text(size=7, face = "bold"))+
+    theme(legend.position="none")+
+    scale_fill_manual(values = c( "Os.ostertagi" = "#246377",
+                                  "C.oncophora" = "#cc9900",
+                                  "Tr.axei" = "#bdd373",
+                                  "Tr.colubriformis" = "#98c127", 
+                                  "Oe.radiatum" = "#7e4794",
+                                  "Oe.venulosum" = "#c701ff", 
+                                  "H.contortus" = "#d83034",
+                                  "Te.circumcincta" = "#ff8cab", 
+                                  "Os.leptospicularis" = "#8fd7d7", 
+                                  "N.helvetianus" = "#0b3a7d")) + 
+    scale_y_continuous(labels = scales::percent_format(scale = 100),
+                       expand = c(0, 0) ) 
+  
+  
+
+  
+  farm_26_spp_plot
+
+#Legend 
+  legend_plot <- ggplot(melt_data_26, aes(x=day_date, y = value, fill = variable)) +
+    geom_col(position = "fill") +
+    theme_classic()+
+    scale_x_discrete(labels=c("20/06",
+                              "17/07",
+                              "14/08",
+                              "09/09",
+                              "10/10",
+                              "05/11"))+
+    
+    labs(fill="") +
+    ylab("Species composition") +
+    xlab("") +
+    # theme(legend.position="none")+ 
+    theme(legend.position="bottom") +
+    theme(legend.text = element_text(face = "italic"),
+          legend.title = element_text(face = "bold")) +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.5, size = 8)) +
+    theme(axis.text.y = element_text(size = 6)) +
+    theme(axis.title.y = element_text(size = 7, face = "italic")) +
+    scale_fill_manual(
+      values = c(
+        "Os.ostertagi" = "#246377",
+        "C.oncophora" = "#cc9900",
+        "Tr.axei" = "#bdd373",
+        "Tr.colubriformis" = "#98c127", 
+        "Oe.radiatum" = "#7e4794",
+        "Oe.venulosum" = "#c701ff", 
+        "H.contortus" = "#d83034",
+        "Te.circumcincta" = "#ff8cab", 
+        "Os.leptospicularis" = "#8fd7d7", 
+        "N.helvetianus" = "#0b3a7d"
+      ),
+      labels = c(
+        expression(italic("Os. ostertagi")),
+        expression(italic("C. oncophora")),
+        expression(italic("Tr. axei")),
+        expression(italic("Tr. colubriformis")),
+        expression(italic("Oe. radiatum")),
+        expression(italic("Oe. venulosum")),
+        expression(italic("H. contortus")),
+        expression(italic("Te. circumcincta")),
+        expression(italic("Os. leptospicularis")),
+        expression(italic("N. helvetianus"))
+      )
+    ) +
+    labs(fill = "Species")
+
+  
+  
+  legend <- get_legend(legend_plot)
+  as_ggplot(legend)
+
+  
+  
+  
+  
+  
+# REARRANGE PLOTS 
+
+no_treatment_figure<- farm_09_nem_fec_boxplot + farm_11_nem_fec_boxplot + farm_18_nem_fec_boxplot + farm_26_nem_fec_boxplot +
+farm_09_fec_boxplot + farm_11_fec_boxplot + farm_18_fec_boxplot + farm_26_fec_boxplot +
+farm_09_spp_plot + farm_11_spp_plot + farm_18_spp_plot + farm_26_spp_plot +
+  plot_layout(widths = c(1.1,1,1.1,1.2), heights = (c(1, 3, 5)))
+
+final_notx_figure <- no_treatment_figure / legend + plot_layout(widths = c(1), heights = (c(10,1)))
+
+final_notx_figure
+
+ggsave(plot = final_notx_figure, filename = "no_treatment_figure.pdf", width = 8.3, height = 11.7, dpi = 1000)
+
+  
