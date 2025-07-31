@@ -1,1 +1,71 @@
+################################################
+# GGPLOT2 R SCRIPT FOR FIG.1 FARM LOCATIONS / SEASONAL PATTERNS OF FAECAL EGG COUNTS AND GASTROINTESTINAL NEMATODE SPECIES COMPOSITION IN SCOTTISH DAIRY CALVES
+################################################
+library(sf)
+library(geojsonsf)
+library(ggplot2)
+library(ggthemes)
+library(ggspatial)
+library(cowplot)
+
+setwd("~/Library/CloudStorage/OneDrive-UniversityofGlasgow(2)/1_2022_data/map/DATA")
+
+file_path <- "Local_Authority_Boundaries_-_Scotland.json"
+
+sf <- geojson_sf(file_path)
+#tell R co-ordinates are in the UK national grid
+sf <- st_set_crs(sf,"EPSG:27700")
+#convert into lat/long data
+sf2 <- st_transform(sf,"EPSG:4326")
+
+
+farm_locs <- read.csv("farm_coord.csv")
+farm_locs_sf <- st_as_sf(farm_locs, coords = c('long', 'lat'))
+farm_locs_sf <- st_set_crs(farm_locs_sf,"EPSG:4326")
+
+main_figure <- ggplot() + 
+  geom_sf(data = sf2) + 
+  geom_point(data = farm_locs, aes(x = long, y = lat), colour = "red", size = 1.5) +
+  xlab("") +
+  ylab("") +
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),) +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank()) + 
+  theme(axis.ticks = element_blank()) +
+  coord_sf(xlim = c(-6.0, -0.2), ylim = c(54.6, 57.7), expand = FALSE) +
+  geom_rect(aes(xmin = -4.9, xmax = -3.7, ymin = 55.2, ymax = 55.9), 
+            fill = NA, colour = "black") +
+  annotation_scale() +
+  theme(panel.background = element_rect(fill = "white", colour = "white")) +
+  annotate("text", x = -4.75, y =55.8, label = "A", size = 5, fontface = "bold") +
+  annotate("text", x = -1.5, y =56.5, label = "Farm location", size = 3.5) +
+  geom_point(aes(x = -1.9, y = 56.5), colour = "red", size = 1.5)
+
+main_figure
+
+
+
+final_figure <- ggdraw(main_figure) +
+  draw_plot(
+    {
+main_figure + coord_sf(
+  xlim = c(-3.7, -4.9),
+  ylim = c(55.2, 55.9),
+  expand = FALSE)}, 
+x = 0.5, y = 0.15,, 
+width = 0.40, 
+height = 0.40)
+
+
+
+
+
+
+ggsave(plot = final_figure, filename = "final_figure.pdf", width = 8.3, height = 11.7)
+
+
+
+
+
 
